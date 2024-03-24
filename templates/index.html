@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relevant Text Finder</title>
+</head>
+<body>
+    <h1>Relevant Text Finder</h1>
+    <form method="post" enctype="multipart/form-data">
+        <input type="file" name="file" accept=".txt"><br><br>
+        Query: <input type="text" name="query"><br><br>
+        <label>Use Highlight:</label>
+        <label class="switch">
+            <input type="checkbox" name="use_highlight" value="yes">
+            <span class="slider round"></span>
+        </label>
+        <div id="confidence_section" style="display: none;">
+            Confidence (if using Highlight): <input type="number" name="confidence" value="0.5" min="0" max="1" step="0.01"><br><br>
+        </div>
+        <div id="relevant_sentences_section">
+            Number of Relevant Sentences: <input type="number" name="n" value="5" min="1"><br><br>
+        </div>
+        <input type="submit" value="Submit">
+    </form>
+    {% if sentences %}
+        {% for sentence in sentences %}
+            <li>{{ sentence }}</li>
+        {% endfor %}
+    {% endif %}
+    {% if result_html %}
+        {{ result_html }}
+    {% endif %}
+
+    <style>
+        /* The switch - adapted from w3schools example: https://www.w3schools.com/howto/howto_css_switch.asp */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {display:none;}
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+        input:checked + .slider {
+            background-color: #2196F3;
+        }
+
+        input:focus + .slider {
+            box-shadow: 0 0 1px #2196F3;
+        }
+
+        input:checked + .slider:before {
+            -webkit-transform: translateX(26px);
+            -ms-transform: translateX(26px);
+            transform: translateX(26px);
+        }
+
+        /* Rounded sliders */
+        .slider.round {
+            border-radius: 34px;
+        }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+    </style>
+
+    <script>
+        // Hide confidence input and show relevant sentences input by default
+        document.addEventListener("DOMContentLoaded", function() {
+            var confidenceSection = document.getElementById('confidence_section');
+            var relevantSentencesSection = document.getElementById('relevant_sentences_section');
+            confidenceSection.style.display = 'none';
+            relevantSentencesSection.style.display = 'block';
+        });
+
+        // Toggle confidence input and relevant sentences input based on checkbox state
+        document.querySelector('input[name="use_highlight"]').addEventListener('change', function() {
+            var confidenceSection = document.getElementById('confidence_section');
+            var relevantSentencesSection = document.getElementById('relevant_sentences_section');
+            if (this.checked) {
+                confidenceSection.style.display = 'block';
+                relevantSentencesSection.style.display = 'none';
+            } else {
+                confidenceSection.style.display = 'none';
+                relevantSentencesSection.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

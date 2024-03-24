@@ -1,0 +1,4 @@
+- [ ] Make a docker container
+- [ ] Sqlite to ChromaDB 
+- [ ] Modality Support (image)
+- [ ] Voice input
