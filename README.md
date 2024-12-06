@@ -23,11 +23,11 @@ Welcome to **SemanticSpotlight 🔦** - This is a tool for identifying important
   ```
 2. Install the required module
   ```bash
-  pip install flask nltk sentence-transformers
+  pip install -r requirements.txt
   ```
 3. Run the app
   ```bash
-  python app.py
+  python webapp.py
   ```
 
 
