@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for
+from markupsafe import Markup
 from werkzeug.utils import secure_filename
 from embedding_search import *
 import os
@@ -44,7 +45,7 @@ def index():
                 # Read the generated HTML file
                 with open(f'html_storages/{filename}.html', 'r') as f:
                     result_html = f.read()
-                return render_template('index.html', result_html=result_html)
+                return render_template('index.html', result_html=Markup(result_html))
 
             else:
                 # Call the function to compute relevant sentences
@@ -63,4 +64,4 @@ if __name__ == '__main__':
             except OSError:
                 pass
 
-    app.run(debug=True)
+    app.run(debug=True, port=3000)

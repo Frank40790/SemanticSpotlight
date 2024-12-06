@@ -7,9 +7,8 @@ from nltk.tokenize import sent_tokenize
 from sentence_transformers import SentenceTransformer, util
 import torch
 
-# Initialize NLTK tokenizer if not already downloaded
-if not os.path.exists(nltk.data.find('tokenizers/punkt')):
-    nltk.download('punkt')
+# Initialize NLTK tokenizer
+nltk.download('punkt_tab')
 
 # Initialize SentenceTransformer model
 model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -28,8 +27,9 @@ def create_or_connect_to_database(filename):
     # Check if metadata exists, if not insert current time
     c.execute("SELECT * FROM metadata")
     row = c.fetchone()
+
     if not row:
-        last_modified_time = os.path.getmtime(filename)
+        last_modified_time = os.path.getmtime(f"uploads/{filename}")
         c.execute("INSERT INTO metadata VALUES (?)", (last_modified_time,))
         conn.commit()
     
@@ -41,7 +41,7 @@ def close_database_connection(conn):
 
 def compute_similarity(conn, c, texts, query, filename):
     # Check if embeddings need to be recomputed based on file modification time
-    last_modified_time = os.path.getmtime(filename)
+    last_modified_time = os.path.getmtime(f"uploads/{filename}")
     c.execute("SELECT last_modified_time FROM metadata")
     row = c.fetchone()
     if row and row[0] == last_modified_time:
@@ -100,27 +100,9 @@ def read_file(filename):
 def write_html(filename, texts):
     with open(f"html_storages/{filename}.html", "w") as f:
         write_content = f"""
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Highlighted Text</title>
-            <style>
-                body {{
-                    font-family: Arial, sans-serif;
-                    line-height: 1.6;
-                    margin: 40px;
-                }}
-                .highlight {{
-                    background-color: #ffff66; /* Yellow background for highlighted text */
-                }}
-            </style>
-        </head>
-        <body>
-            <p>
-                {'.'.join(texts)}
-            </p>
-        </body>
-        </html>
+        <div>
+            {''.join(texts)}
+        </div>
         """
         f.write(write_content)
 
@@ -129,7 +111,7 @@ def highlight_relevant_sentences(texts, similarities, confidence):
     highlighted_texts = texts.copy()
     for sim in similarities:
         if sim[0][0] > confidence:
-            highlighted_texts[highlighted_texts.index(sim[1])] = f"<b class='highlight'> {sim[1].strip()} </b> ({sim[0][0]:.2f})"
+            highlighted_texts[highlighted_texts.index(sim[1])] = f"<div class='highlight'> {sim[1].strip()} </div> ({sim[0][0]:.2f})"
     return highlighted_texts
 
 def run_highlight(filename, query, confidence):
@@ -175,25 +157,11 @@ def run_get_relevant(filename, query, n):
 
 
 # if __name__ == "__main__":
-#     filename = "script.txt"
-#     query = "carbon cycle"
+#     filename = "text.txt"
+#     query = "carbon"
 #     confidence = 0.5
 #     n = 5
 #     run_highlight(filename, query, confidence) 
 #     run_get_relevant(filename, query, n)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
